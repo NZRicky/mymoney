@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Default controller
+ */
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -14,19 +19,12 @@ class DefaultController
 {
 
     /**
-     * @Route("/abc", name="index")
-     * @param UserPasswordEncoderInterface $encoder
+     * @Route("/", name="index")
      * @return Response
      */
-    public function index(UserPasswordEncoderInterface $encoder) {
+    public function index(UserPasswordEncoderInterface $encoder): Response
+    {
         return new Response('ok');
-        /*
-        $em = $this->getDoctrine()->getManager();
-        $user = new User();
-        $user->setUsername('admin');
-        $user->setPassword($encoder->encodePassword($user,'admin'));
-        $em->persist($user);
-        $em->flush();*/
     }
 
 }
