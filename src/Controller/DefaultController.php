@@ -24,6 +24,8 @@ class DefaultController
      */
     public function index(UserPasswordEncoderInterface $encoder): Response
     {
+
+        $a = 'b';
         return new Response('ok');
     }
 
