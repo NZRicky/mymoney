@@ -15,8 +15,9 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: lazy
+            anonymous: ~
             json_login:
+                check_path: /login
 
 
 
@@ -31,5 +32,5 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/, roles: ROLE_USER }
+        # - { path: ^/, roles: ROLE_USER }
 
