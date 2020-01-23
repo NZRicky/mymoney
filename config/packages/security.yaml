@@ -16,6 +16,8 @@ security:
             security: false
         main:
             anonymous: lazy
+            json_login:
+
 
 
             # activate different ways to authenticate
