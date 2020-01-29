@@ -14,9 +14,11 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        login:
+            pattern: ^/login
+            security: false
         main:
             #anonymous: ~
-            pattern: ^/
             form_login:
                 login_path: /login
                 check_path: /login
@@ -42,5 +44,6 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        #- { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        #- { path: ^/, roles: ROLE_USER }
 
