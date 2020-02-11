@@ -14,18 +14,36 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api_login:
+            pattern:  ^/api/auth/login
+            stateless: true
+            anonymous: true
+            json_login:
+                provider: app_user_provider
+                check_path:               /api/auth/login
+                success_handler:          lexik_jwt_authentication.handler.authentication_success
+                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+            provider: app_user_provider
 
-        main:
-            anonymous: ~
-            form_login:
-                login_path: /login
-                check_path: /login
-
+        api:
+            pattern: ^/api
+            stateless: true
+            anonymous: false
+            provider: app_user_provider
             guard:
                 authenticators:
-                    - App\Security\LoginFormAuthenticator
-            logout:
-                path: app_logout
+                    - lexik_jwt_authentication.jwt_token_authenticator
+#        main:
+#            anonymous: ~
+#            form_login:
+#                login_path: /login
+#                check_path: /login
+#
+#            guard:
+#                authenticators:
+#                    - App\Security\LoginFormAuthenticator
+#            logout:
+#                path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
 
