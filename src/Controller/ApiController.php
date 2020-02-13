@@ -48,7 +48,7 @@ class ApiController extends AbstractController
 
             // validate incoming content
             if (!isset($data['amount'])) {
-                throw new \Exception('Amount is not defined.', 400);
+                throw new \Exception('Amount is not defined', 400);
             }
 
             //todo: validate category
@@ -63,7 +63,10 @@ class ApiController extends AbstractController
 
             return new JsonResponse(['message' => 'Transaction was created successfully'], 201);
         } catch (\Exception $ex) {
-            return new JsonResponse(['message' => $ex->getMessage()], $ex->getCode());
+            return new JsonResponse([
+                    'code' => $ex->getCode(),
+                    'message' => $ex->getMessage(),
+                ], $ex->getCode());
         }
 
     }
