@@ -3,7 +3,11 @@
 namespace App\Tests\Controller;
 
 
-class ApiControllerTest
+class ApiControllerTest extends ApiTestCase
 {
+    public function testNew()
+    {
+
+    }
 
 }
