@@ -7,6 +7,10 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Component\HttpClient\HttpClient;
 
+/**
+ * Base class for all API request test
+ * @package App\Tests\Controller
+ */
 class ApiTestCase extends TestCase
 {
     private static $staticClient;
@@ -16,7 +20,6 @@ class ApiTestCase extends TestCase
 
     public static function setUpBeforeClass()
     {
-        self::$siteUrl = 'http://mymoney.local';
         self::$staticClient = HttpClient::create([
             'base_uri' => 'http://web',
             'headers' => [
@@ -25,12 +28,19 @@ class ApiTestCase extends TestCase
         ]);
     }
 
+    /**
+     * Get jwt token for each request
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
     protected function setUp()
     {
         $this->client = self::$staticClient;
 
+        // get jwt token before test
         $response = $this->client->request('POST', '/api/auth/login', [
-
             'body' => json_encode([
                 'username' => 'admin',
                 'password' => 'admin'

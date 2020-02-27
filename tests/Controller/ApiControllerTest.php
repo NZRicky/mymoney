@@ -5,18 +5,23 @@ namespace App\Tests\Controller;
 
 class ApiControllerTest extends ApiTestCase
 {
-    public function testNew()
+    /**
+     * Test if create new transaction successfully
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function testNewTransaction()
     {
         $response = $this->client->request('POST', '/api/transaction/new', [
+            'auth_bearer' => $this->token,
             'body' => json_encode([
-                'aa' => 'dd'
+                'amount' => 100,
             ])
         ]);
 
-
         $responseStatus = $response->getStatusCode();
-        $this->assertEquals(200, $responseStatus);
-
+        $this->assertEquals(201, $responseStatus);
     }
+
+
 
 }
