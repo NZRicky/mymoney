@@ -41,13 +41,32 @@ class TransactionController extends AbstractController
                 throw new \Exception('Amount is not defined', 400);
             }
 
-            //todo: validate category
+            if (!preg_match("/^[0-9]+(\.[0-9]+)?$/",$data['amount'])) {
+                throw new \Exception('Amount must be a valid number', 400);
+            }
+
+            //validate category
+            if (!isset($data['category'])) {
+                throw new \Exception('Category is not defined', 400);
+            }
+
+            if (!preg_match("/[0-9]+/",$data['category'])) {
+                throw new \Exception('Category must be a valid number', 400);
+            }
+
+            $em = $this->getDoctrine()->getManager();
+
+            $category = $em->getRepository('Category')->findOneById($data['category']);
+            if (!$category) {
+                throw new \Exception('Category is valid', 400);
+            }
 
             $transaction = new Transaction();
             $transaction->setAmount(floatval($data['amount']));
             $transaction->setCreatedAt(new \DateTimeImmutable());
+            $transaction->setCategory($category);
 
-            $em = $this->getDoctrine()->getManager();
+
             $em->persist($transaction);
             $em->flush();
 
