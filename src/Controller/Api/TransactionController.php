@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Repository\TransactionRepository;
@@ -36,6 +37,12 @@ class TransactionController extends AbstractController
             $content = $request->getContent();
             $data = json_decode($content, true);
 
+            $createdAt = new \DateTimeImmutable();
+
+            if (isset($data['date'])) {
+                $createdAt = new \DateTimeImmutable($data['date']);
+            }
+
             // validate incoming content
             if (!isset($data['amount'])) {
                 throw new \Exception('Amount is not defined', 400);
@@ -50,20 +57,20 @@ class TransactionController extends AbstractController
                 throw new \Exception('Category is not defined', 400);
             }
 
-            if (!preg_match("/[0-9]+/",$data['category'])) {
+            if (!preg_match("/[0-9]+/",strval($data['category']))) {
                 throw new \Exception('Category must be a valid number', 400);
             }
 
             $em = $this->getDoctrine()->getManager();
 
-            $category = $em->getRepository('Category')->findOneById($data['category']);
+            $category = $em->getRepository(Category::class)->findOneById($data['category']);
             if (!$category) {
-                throw new \Exception('Category is valid', 400);
+                throw new \Exception('Category is not existing', 400);
             }
 
             $transaction = new Transaction();
             $transaction->setAmount(floatval($data['amount']));
-            $transaction->setCreatedAt(new \DateTimeImmutable());
+            $transaction->setCreatedAt($createdAt);
             $transaction->setCategory($category);
 
 
@@ -93,15 +100,41 @@ class TransactionController extends AbstractController
 
         $transactions = $this->getDoctrine()
             ->getRepository(Transaction::class)
-            ->findAll();
+            ->findBy([],
+                ['createdAt' =>'DESC'],
+                2,
+                0);
         foreach ($transactions as $transaction) {
             $datas[] = [
                 'date' => $transaction->getCreatedAt()->format('d/m/Y'),
                 'id' => $transaction->getId(),
-                'amount' => $transaction->getAmount()
+                'amount' => $transaction->getAmount(),
+                'category' => $transaction->getCategory() ? $transaction->getCategory()->getName() : 'N/A'
             ];
         }
+        
+        $total = count(
+            $this->getDoctrine()
+            ->getRepository(Transaction::class)
+            ->findAll()
+        );
 
-        return new JsonResponse($datas);
+        $page = $request->query->get('page');
+        $perPage = 2;
+        if (1 == $page) {
+            $start = 0;
+        } else {
+            $start = $page * $perPage;
+        }
+
+        $totalPages = ceil($total / $perPage);
+
+        return new JsonResponse([
+            'page' => $page,
+            'perPage' => $perPage,
+            'total' => $total,
+            'totalPages' => $totalPages,
+            'data' => $datas
+        ]);
     }
 }
