@@ -90,11 +90,40 @@ class TransactionController extends AbstractController
     /**
      * List all transactions
      *
-     * @Route("/list", name="list", methods={"GET"})
+     * @Route("/list", name="list_all", methods={"GET"})
      * @param Request $request
      * @return Response
      */
-    public function list(Request $request): Response
+    public function listAll(Request $request): Response
+    {
+        $datas = [];
+
+        $transactions = $this->getDoctrine()
+            ->getRepository(Transaction::class)
+            ->findBy([],
+                ['createdAt' =>'DESC']);
+        foreach ($transactions as $transaction) {
+            $datas[] = [
+                'date' => $transaction->getCreatedAt()->format('d/m/Y'),
+                'id' => $transaction->getId(),
+                'amount' => $transaction->getAmount(),
+                'category' => $transaction->getCategory() ? $transaction->getCategory()->getName() : 'N/A'
+            ];
+        }
+
+        return new JsonResponse([
+            'data' => $datas
+        ]);
+    }
+
+    /**
+     * List transactions by page
+     *
+     * @Route("/list/{page}", name="list_by_page", methods={"GET"})
+     * @param Request $request
+     * @return Response
+     */
+    public function listByPage(Request $request, int $page): Response
     {
         $datas = [];
 
@@ -112,11 +141,11 @@ class TransactionController extends AbstractController
                 'category' => $transaction->getCategory() ? $transaction->getCategory()->getName() : 'N/A'
             ];
         }
-        
+
         $total = count(
             $this->getDoctrine()
-            ->getRepository(Transaction::class)
-            ->findAll()
+                ->getRepository(Transaction::class)
+                ->findAll()
         );
 
         $page = $request->query->get('page');
